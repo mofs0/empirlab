@@ -35,13 +35,23 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install core dependencies
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -e ".[dev]"
-          pip install scikit-learn scipy numpy pandas matplotlib statsmodels
+          pip install numpy>=1.24 pandas>=2.0 scikit-learn>=1.3 scipy>=1.10 matplotlib>=3.7
+          pip install pytest pytest-cov
 
-      - name: Run tests (no torch / RL deps)
+      - name: Run core tests
+        env:
+          PYTHONPATH: .
         run: |
           pytest tests/test_causal.py tests/test_causal_v2.py \
                  tests/test_utils.py tests/test_finance.py \
@@ -52,15 +62,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install with DL extras
+
+      - name: Cache pip (torch)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-torch-cpu-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-torch-cpu-
+
+      - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install numpy pytest
           pip install torch --index-url https://download.pytorch.org/whl/cpu
+
       - name: Run DL tests
+        env:
+          PYTHONPATH: .
         run: pytest tests/test_dl.py -v --tb=short
 
   test-rl:
@@ -68,13 +91,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install with RL extras
+
+      - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -e ".[dev]"
-          pip install gymnasium numpy
+          pip install numpy pytest gymnasium
+
       - name: Run RL tests
+        env:
+          PYTHONPATH: .
         run: pytest tests/test_rl.py -v --tb=short

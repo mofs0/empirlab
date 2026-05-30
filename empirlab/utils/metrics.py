@@ -8,7 +8,7 @@ def sharpe(returns: np.ndarray, rf: float = 0.0, periods: int = 252) -> float:
     r = np.asarray(returns, dtype=float)
     excess = r - rf / periods
     std = excess.std()
-    return 0.0 if std == 0 else float(excess.mean() / std * np.sqrt(periods))
+    return 0.0 if np.isclose(std, 0.0) else float(excess.mean() / std * np.sqrt(periods))
 
 
 def max_drawdown(prices: np.ndarray) -> float:

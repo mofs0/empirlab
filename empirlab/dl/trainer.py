@@ -1,9 +1,14 @@
 """Lightweight PyTorch training loop (no Lightning dependency)."""
 from __future__ import annotations
 
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader
+try:
+    import torch
+    import torch.nn as nn
+    from torch.utils.data import DataLoader
+except ImportError as _e:
+    raise ImportError(
+        "PyTorch is required for empirlab.dl. Install with: pip install torch"
+    ) from _e
 
 
 def train_loop(

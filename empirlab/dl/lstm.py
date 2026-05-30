@@ -11,9 +11,14 @@ References
 from __future__ import annotations
 
 import numpy as np
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, TensorDataset
+try:
+    import torch
+    import torch.nn as nn
+    from torch.utils.data import DataLoader, TensorDataset
+except ImportError as _e:
+    raise ImportError(
+        "PyTorch is required for empirlab.dl. Install with: pip install torch"
+    ) from _e
 
 
 class _RNNNet(nn.Module):
