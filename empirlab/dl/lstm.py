@@ -109,4 +109,16 @@ class LSTMForecaster:
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.net_.parameters(), 1.0)
                 opt.step()
-                total += loss.i
+                total += loss.item() * len(xb)
+            avg = total / len(X_t)
+            self.history_.append(avg)
+            if verbose and ep % 10 == 0:
+                print(f"Epoch {ep:3d}/{self.epochs} | Loss {avg:.6f}")
+        return self
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """Predict on (N, seq_len, input_size) input."""
+        self.net_.eval()
+        with torch.no_grad():
+            out = self.net_(torch.FloatTensor(X).to(self.device)).cpu().numpy()
+        return out.squeeze()

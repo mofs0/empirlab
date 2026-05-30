@@ -91,4 +91,4 @@ class DoubleML(BaseEstimator):
             "coef":[round(self.coef_,4)], "std_err":[round(self.std_err_,4)],
             "t_stat":[round(self.t_stat_,4)], "p_value":[round(self.p_value_,4)],
             "ci_lower":[round(self.ci_lower_,4)], "ci_upper":[round(self.ci_upper_,4)],
-            "sig"
+            "sig":[sig]}, index=["treatment"])
