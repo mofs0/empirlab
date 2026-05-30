@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ruff
+        run: pip install ruff
+      - name: Run ruff
+        run: ruff check empirlab/ --select E,F,W --ignore E501
+
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install core dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install scikit-learn scipy numpy pandas matplotlib statsmodels
+
+      - name: Run tests (no torch / RL deps)
+        run: |
+          pytest tests/test_causal.py tests/test_causal_v2.py \
+                 tests/test_utils.py tests/test_finance.py \
+                 -v --tb=short
+
+  test-dl:
+    name: Tests DL (with torch)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install with DL extras
+        run: |
+          pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Run DL tests
+        run: pytest tests/test_dl.py -v --tb=short
+
+  test-rl:
+    name: Tests RL (with gymnasium)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install with RL extras
+        run: |
+          pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install gymnasium numpy
+      - name: Run RL tests
+        run: pytest tests/test_rl.py -v --tb=short
