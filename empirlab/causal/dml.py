@@ -16,7 +16,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from scipy import stats
-from sklearn.base import clone
+from sklearn.base import BaseEstimator, clone
 from sklearn.linear_model import LassoCV, RidgeCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import KFold
@@ -29,7 +29,7 @@ _LEARNERS = {
                                     max_features=0.5, n_jobs=-1),
 }
 
-class DoubleML:
+class DoubleML(BaseEstimator):
     """Double/Debiased ML for the Partially Linear Regression model.
 
     Parameters
@@ -91,4 +91,4 @@ class DoubleML:
             "coef":[round(self.coef_,4)], "std_err":[round(self.std_err_,4)],
             "t_stat":[round(self.t_stat_,4)], "p_value":[round(self.p_value_,4)],
             "ci_lower":[round(self.ci_lower_,4)], "ci_upper":[round(self.ci_upper_,4)],
-            "sig":[sig]}, index=["treatment"])
+            "sig"

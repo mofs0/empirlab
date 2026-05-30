@@ -58,16 +58,21 @@ class LSTMForecaster:
     >>> y_hat = model.predict(X_test)
     """
 
-    def __init__(self, input_size: int, hidden_size: int = 64,
-                 num_layers: int = 2, output_size: int = 1,
-                 cell_type: str = "lstm", dropout: float = 0.1,
+    def __init__(self, input_size: int = None, hidden_size: int = 64,
+                 num_layers: int = 2, n_layers: int = None,
+                 output_size: int = 1,
+                 cell_type: str = "lstm", rnn_type: str = None,
+                 dropout: float = 0.1,
                  lr: float = 1e-3, epochs: int = 50,
                  batch_size: int = 64, device: str = None):
-        self.input_size  = input_size
+        self.input_size  = input_size   # inferred from data if None
         self.hidden_size = hidden_size
-        self.num_layers  = num_layers
+        # Accept n_layers as alias for num_layers
+        self.num_layers  = n_layers if n_layers is not None else num_layers
         self.output_size = output_size
-        self.cell_type   = cell_type
+        # Accept rnn_type as alias for cell_type ('GRU'/'LSTM' → lower)
+        self.cell_type   = (rnn_type.lower() if rnn_type is not None
+                            else cell_type.lower())
         self.dropout     = dropout
         self.lr          = lr
         self.epochs      = epochs
@@ -81,8 +86,11 @@ class LSTMForecaster:
         if y_t.dim() == 1:
             y_t = y_t.unsqueeze(1)
 
+        # Infer input_size from data if not provided
+        input_size = self.input_size if self.input_size is not None else X.shape[2]
+
         self.net_ = _RNNNet(
-            self.input_size, self.hidden_size, self.num_layers,
+            input_size, self.hidden_size, self.num_layers,
             self.output_size, self.cell_type, self.dropout,
         ).to(self.device)
 
@@ -101,16 +109,4 @@ class LSTMForecaster:
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.net_.parameters(), 1.0)
                 opt.step()
-                total += loss.item() * len(xb)
-            avg = total / len(X_t)
-            self.history_.append(avg)
-            if verbose and ep % 10 == 0:
-                print(f"Epoch {ep:3d}/{self.epochs} | Loss {avg:.6f}")
-        return self
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """Predict on (N, seq_len, input_size) input."""
-        self.net_.eval()
-        with torch.no_grad():
-            out = self.net_(torch.FloatTensor(X).to(self.device)).cpu().numpy()
-        return out.squeeze()
+                total += loss.i

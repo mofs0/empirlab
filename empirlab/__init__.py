@@ -2,7 +2,6 @@
 __version__ = "0.1.0"
 __author__  = "mofs0"
 
-from empirlab.causal.dml import DoubleML
-from empirlab.causal.datasets import make_plr_data, make_hte_data
-
-__all__ = ["DoubleML", "make_plr_data", "make_hte_data"]
+# Lazy imports: submodules are imported on demand to avoid hard dependency
+# failures when optional extras (torch, gymnasium, sklearn…) are absent.
+def __getattr__

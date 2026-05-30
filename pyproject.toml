@@ -58,6 +58,10 @@ include = ["empirlab*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts   = "-v --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::FutureWarning",
+]
 
 [tool.ruff]
 line-length = 100
