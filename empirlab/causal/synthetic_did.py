@@ -46,13 +46,13 @@ def _time_weights(Y_post_ctrl: np.ndarray, omega: np.ndarray) -> np.ndarray:
     l0 = np.ones(T_post) / T_post
     target = omega @ Y_post_ctrl.mean(1)  # scalar
 
-    def obj(l):
-        diff = omega @ (Y_post_ctrl @ l) - target
+    def obj(lv):
+        diff = omega @ (Y_post_ctrl @ lv) - target
         return diff ** 2
 
     res = minimize(obj, l0, method="SLSQP",
                    bounds=[(0, None)] * T_post,
-                   constraints=[{"type": "eq", "fun": lambda l: l.sum() - 1}],
+                   constraints=[{"type": "eq", "fun": lambda lv: lv.sum() - 1}],
                    options={"ftol": 1e-9, "maxiter": 5000})
     return res.x
 

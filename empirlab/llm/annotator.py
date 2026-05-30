@@ -137,7 +137,7 @@ class LLMAnnotator:
                     if isinstance(v, list):
                         return v
                 raise ValueError(f"Expected list in response, got: {parsed}")
-            except Exception as e:
+            except Exception:
                 if attempt == 2:
                     raise
                 time.sleep(2 ** attempt)
@@ -183,7 +183,6 @@ class LLMAnnotator:
         -------
         DataFrame with new column added.
         """
-        import pandas as pd
         texts  = df[text_col].tolist()
         labels = self.annotate(texts, verbose=verbose)
         df     = df.copy()

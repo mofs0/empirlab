@@ -101,9 +101,12 @@ class _RolloutBuffer:
         self.rewards, self.values, self.dones  = [], [], []
 
     def add(self, obs, action, log_prob, reward, value, done):
-        self.obs.append(obs); self.actions.append(action)
-        self.log_probs.append(log_prob); self.rewards.append(reward)
-        self.values.append(value); self.dones.append(done)
+        self.obs.append(obs)
+        self.actions.append(action)
+        self.log_probs.append(log_prob)
+        self.rewards.append(reward)
+        self.values.append(value)
+        self.dones.append(done)
 
     def compute_advantages(self, last_value: float, gamma: float, lam: float):
         T = len(self.rewards)
@@ -167,7 +170,6 @@ class PPOAgent:
         obs_dim = int(np.prod(env.observation_space.shape))
 
         # Detect action space type
-        import gymnasium as gym_mod
         try:
             from gymnasium import spaces as gym_spaces
         except ImportError:
@@ -219,8 +221,11 @@ class PPOAgent:
             idx = np.random.permutation(T)
             for start in range(0, T, self.batch_size):
                 b = idx[start: start + self.batch_size]
-                obs_b = obs_t[b]; act_b = act_t[b]
-                lp_b  = lp_old[b]; adv_b = adv_t[b]; ret_b = ret_t[b]
+                obs_b = obs_t[b]
+                act_b = act_t[b]
+                lp_b = lp_old[b]
+                adv_b = adv_t[b]
+                ret_b = ret_t[b]
 
                 dist = self.actor(obs_b)
                 if self.continuous:
@@ -238,7 +243,8 @@ class PPOAgent:
                 value_loss = 0.5 * (val - ret_b).pow(2).mean()
 
                 loss = policy_loss + value_loss - 0.01 * entropy
-                self.optimizer.zero_grad(); loss.backward()
+                self.optimizer.zero_grad()
+                loss.backward()
                 torch.nn.utils.clip_grad_norm_(
                     list(self.actor.parameters()) + list(self.critic.parameters()), 0.5
                 )
@@ -270,7 +276,9 @@ class PPOAgent:
 
             self.buffer.add(obs, action, log_prob, reward, value, float(done))
             obs = next_obs
-            ep_return += reward; ep_len += 1; step += 1
+            ep_return += reward
+            ep_len += 1
+            step += 1
 
             if done:
                 obs, _ = self.env.reset()

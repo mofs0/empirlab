@@ -21,7 +21,7 @@ import pandas as pd
 from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import KFold
-from sklearn.base import clone, is_classifier
+from sklearn.base import clone
 
 
 class DRLearner:

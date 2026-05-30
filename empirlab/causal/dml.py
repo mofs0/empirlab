@@ -50,15 +50,19 @@ class DoubleML:
     """
     def __init__(self, ml_l="lasso", ml_m="lasso",
                  n_folds=5, n_rep=1, random_state=42):
-        self.ml_l = ml_l; self.ml_m = ml_m
-        self.n_folds = n_folds; self.n_rep = n_rep
+        self.ml_l = ml_l
+        self.ml_m = ml_m
+        self.n_folds = n_folds
+        self.n_rep = n_rep
         self.random_state = random_state
 
     def _get(self, spec):
         return clone(_LEARNERS[spec]) if isinstance(spec, str) else clone(spec)
 
     def _rep(self, X, y, d, seed):
-        n = len(y); ey = np.zeros(n); ed = np.zeros(n)
+        n = len(y)
+        ey = np.zeros(n)
+        ed = np.zeros(n)
         for tr, te in KFold(self.n_folds, shuffle=True, random_state=seed).split(X):
             ey[te] = y[te] - self._get(self.ml_l).fit(X[tr], y[tr]).predict(X[te])
             ed[te] = d[te] - self._get(self.ml_m).fit(X[tr], d[tr]).predict(X[te])

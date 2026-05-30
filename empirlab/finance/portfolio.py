@@ -63,8 +63,10 @@ class MLPortfolio:
             w_long  = pred_row.clip(lower=0) * long_mask
             w_short = pred_row.abs().clip(lower=0) * short_mask
 
-        if w_long.sum()  > 0: w_long  /= w_long.sum()
-        if w_short.sum() > 0: w_short /= w_short.sum()
+        if w_long.sum() > 0:
+            w_long /= w_long.sum()
+        if w_short.sum() > 0:
+            w_short /= w_short.sum()
         return w_long, w_short
 
     # ------------------------------------------------------------------

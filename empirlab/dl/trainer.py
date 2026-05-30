@@ -1,7 +1,6 @@
 """Lightweight PyTorch training loop (no Lightning dependency)."""
 from __future__ import annotations
 
-import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader

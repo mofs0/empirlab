@@ -19,7 +19,6 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import ExtraTreesRegressor
-from sklearn.base import clone
 from scipy import stats
 
 

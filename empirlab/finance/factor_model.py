@@ -12,7 +12,6 @@ where z_{i,t} is a vector of stock characteristics.
 from __future__ import annotations
 
 import numpy as np
-import pandas as pd
 from sklearn.linear_model import ElasticNetCV, LassoCV, RidgeCV
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.base import clone

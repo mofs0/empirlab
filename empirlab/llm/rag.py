@@ -111,7 +111,6 @@ class LitReviewRAG:
         metadatas : optional list of dicts (one per text)
         """
         self._require_deps()
-        from langchain.schema import Document
         from langchain.text_splitter import RecursiveCharacterTextSplitter
         from langchain_openai import OpenAIEmbeddings
         from langchain_community.vectorstores import FAISS

@@ -87,7 +87,6 @@ class LLMDataCleaner:
 
         Returns a boolean list: True = likely error, False = plausible value.
         """
-        import numpy as np
         values = df[col].tolist()
         sample = values[:n_examples] if len(values) > n_examples else values
         system = (
